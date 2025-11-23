@@ -25,8 +25,17 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onAddTo
         
         {/* Breadcrumb / Back */}
         <button 
-          onClick={onBack}
-          className="inline-flex items-center gap-3 text-gray-600 hover:text-primary font-medium mb-12 mt-8 group transition-all duration-300 px-4 py-2 rounded-full hover:bg-primary/5"
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Back button clicked, calling onBack');
+            if (onBack) {
+              onBack();
+            }
+          }}
+          className="inline-flex items-center gap-3 text-gray-600 hover:text-primary font-medium mb-12 mt-8 group transition-all duration-300 px-4 py-2 rounded-full hover:bg-primary/5 cursor-pointer z-50 relative"
+          style={{ pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-primary/10 transition-colors">
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />

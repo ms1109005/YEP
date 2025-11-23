@@ -120,8 +120,9 @@ export const CustomerGallery: React.FC<CustomerGalleryProps> = ({ images }) => {
               ref={(el) => { imageRefs.current[index] = el; }}
               src={img}
               alt={`Photo client ${index + 1}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover will-change-opacity"
               loading="lazy"
+              decoding="async"
               style={{ imageRendering: 'auto' }}
               onLoad={(e) => {
                 // Trigger height recalculation when image loads

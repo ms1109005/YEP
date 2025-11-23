@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { products } from '../data';
 import { Product } from '../types';
 import { Plus, Check, Eye, Search, X, Filter } from 'lucide-react';
@@ -22,20 +22,23 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
     }
   }, [initialSearch]);
 
-  // Add To Cart Animation logic
-  const handleAdd = (e: React.MouseEvent, product: Product) => {
+  // Memoized filtered products for better performance
+  const filteredProducts = useMemo(() => {
+    return products.filter(p => {
+      const matchesCategory = filter === 'all' || p.category === filter;
+      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [filter, searchQuery]);
+
+  // Optimized Add To Cart handler
+  const handleAdd = useCallback((e: React.MouseEvent, product: Product) => {
     e.stopPropagation();
     onAddToCart(product);
     setAnimatingId(product.id);
     setTimeout(() => setAnimatingId(null), 1000);
-  };
-
-  const filteredProducts = products.filter(p => {
-    const matchesCategory = filter === 'all' || p.category === filter;
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          p.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  }, [onAddToCart]);
 
   return (
     <div className="min-h-screen pt-[110px] pb-20 bg-gray-50">
@@ -113,7 +116,7 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
                 <div 
                     key={product.id} 
                     onClick={() => onViewProduct(product)}
-                    className="group bg-white rounded-[2rem] p-4 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-500 cursor-pointer relative border border-gray-100"
+                    className="group bg-white rounded-[2rem] p-4 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-500 cursor-pointer relative border border-gray-100 will-change-transform"
                 >
                     
                     {/* Image Area */}
@@ -121,7 +124,9 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
                          <img 
                             src={product.images[0]} 
                             alt={product.name}
-                            className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700"
+                            className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700 will-change-transform"
+                            loading="lazy"
+                            decoding="async"
                          />
                         
                         {/* Badges */}
@@ -201,7 +206,7 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
                             <button 
                                 onClick={(e) => handleAdd(e, product)}
                                 disabled={animatingId === product.id}
-                                className={`md:hidden w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+                                className={`md:hidden w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg will-change-transform ${
                                     animatingId === product.id 
                                     ? 'bg-green-500 text-white scale-110' 
                                     : 'bg-dark text-white hover:bg-accent hover:text-dark hover:scale-110'

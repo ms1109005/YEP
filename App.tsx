@@ -89,10 +89,9 @@ const App: React.FC = () => {
   };
 
   const handleBackToShop = () => {
-    // Force navigation to shop - clear product and set page
-    setSelectedProduct(null);
-    setCurrentPage('shop');
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    console.log('handleBackToShop called - navigating to shop');
+    // Use handleNavigate which properly manages state and clears selectedProduct
+    handleNavigate('shop');
   };
 
   const handleLoginSuccess = (loggedInUser: User) => {
@@ -157,9 +156,15 @@ const App: React.FC = () => {
     }
   };
 
-  // Calculate totals
-  const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
-  const cartTotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+  // Memoized cart calculations for better performance
+  const cartCount = React.useMemo(() => 
+    cart.reduce((acc, item) => acc + item.qty, 0), 
+    [cart]
+  );
+  const cartTotal = React.useMemo(() => 
+    cart.reduce((acc, item) => acc + item.price * item.qty, 0), 
+    [cart]
+  );
 
   return (
     <div className="flex flex-col min-h-screen">

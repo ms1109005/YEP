@@ -20,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
   const [searchQuery, setSearchQuery] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [animateCart, setAnimateCart] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const prevCartCount = useRef(cartCount);
 
@@ -33,16 +34,36 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
   }, [cartCount]);
 
   useEffect(() => {
+    let rafId: number | null = null;
+    let lastScrollY = window.scrollY;
+
     const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          if (currentScrollY > 300) {
+            setShowScrollTop(true);
+          } else {
+            setShowScrollTop(false);
+          }
+          lastScrollY = currentScrollY;
+          rafId = null;
+        });
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, []);
+
+  // Mark as mounted after initial load
+  useEffect(() => {
+    setIsMounted(true);
   }, []);
 
   // Prevent body scroll when mobile menu is open
@@ -103,6 +124,9 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
                     src="/images/logo.png" 
                     alt="SUNBAG" 
                     className="h-36 md:h-64 w-auto object-contain"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                   />
               </a>
           </div>
@@ -227,7 +251,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
       </header>
 
       {/* Mobile Menu Full Screen Overlay */}
-      <div className={`fixed inset-0 bg-white z-[60] flex flex-col transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
+      <div className={`fixed inset-0 bg-white z-[60] flex flex-col ${isMounted ? 'transition-all duration-500 ease-in-out' : ''} ${isMobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
           
           {/* Mobile Header inside Menu */}
           <div className="flex justify-between items-center p-6 border-b border-gray-100">

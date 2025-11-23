@@ -10,6 +10,8 @@ interface HomeProps {
 
 export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   const heroBgRef = useRef<HTMLDivElement>(null);
+  const rafId = useRef<number | null>(null);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     // Intersection Observer for Reveal Animations
@@ -17,38 +19,49 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
       entries.forEach(entry => {
         if(entry.isIntersecting) {
           entry.target.classList.add('opacity-100', 'translate-y-0');
-          entry.target.classList.remove('opacity-0', 'translate-y-8'); // Increased movement for natural feel
+          entry.target.classList.remove('opacity-0', 'translate-y-8');
         }
       });
-    }, { threshold: 0.15 }); // Increased threshold so it triggers when clearly visible
+    }, { threshold: 0.15, rootMargin: '50px' });
 
     const elements = document.querySelectorAll('.reveal-on-scroll');
     elements.forEach(el => observer.observe(el));
 
-    // Parallax Effect Logic
-    const handleScroll = () => {
+    // Optimized Parallax with requestAnimationFrame
+    const updateParallax = () => {
       if (heroBgRef.current) {
         const scrolled = window.scrollY;
         // Only animate if the hero is likely in view to save resources
-        if (scrolled < window.innerHeight) {
-            // Move background down at 50% of scroll speed
-            heroBgRef.current.style.transform = `translateY(${scrolled * 0.5}px)`;
+        if (scrolled < window.innerHeight * 1.5) {
+          // Use transform3d for GPU acceleration
+          heroBgRef.current.style.transform = `translate3d(0, ${scrolled * 0.5}px, 0)`;
         }
+      }
+      rafId.current = null;
+    };
+
+    const handleScroll = () => {
+      // Throttle with requestAnimationFrame
+      if (!rafId.current) {
+        rafId.current = requestAnimationFrame(updateParallax);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
         observer.disconnect();
         window.removeEventListener('scroll', handleScroll);
+        if (rafId.current) {
+          cancelAnimationFrame(rafId.current);
+        }
     };
   }, []);
 
   return (
     <div className="overflow-hidden">
       {/* HERO SECTION */}
-      <section className="relative h-screen min-h-[850px] flex items-center justify-center text-center px-4 overflow-hidden">
+      <section className="relative h-screen min-h-[600px] md:min-h-[850px] flex items-center justify-center text-center px-4 overflow-hidden">
         {/* Background Image with Parallax */}
         <div 
             ref={heroBgRef}
@@ -57,7 +70,10 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
           <img 
             src="/images/image-principale.jpeg" 
             alt="Image principale SUNBAG" 
-            className="w-full h-[115%] object-cover -mt-[5%]"
+            className="w-full h-full md:h-[115%] object-cover md:-mt-[5%]"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             onError={(e) => {
               // High resolution fallback (4K) for sharpness
               (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=100&w=3200&auto=format&fit=crop";
@@ -68,21 +84,21 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         
         {/* Gradient removed as requested */}
 
-        <div className="relative z-10 max-w-5xl text-white p-6 mt-16">
-            <span className="inline-block py-1.5 px-4 rounded-full bg-accent/90 backdrop-blur text-dark font-bold text-sm mb-6 uppercase tracking-wider animate-fade-in shadow-[0_0_20px_rgba(255,159,28,0.5)]">
+        <div className="relative z-10 max-w-5xl text-white p-4 md:p-6 mt-8 md:mt-16">
+            <span className="inline-block py-1.5 px-3 md:px-4 rounded-full bg-accent/90 backdrop-blur text-dark font-bold text-xs md:text-sm mb-4 md:mb-6 uppercase tracking-wider animate-fade-in shadow-[0_0_20px_rgba(255,159,28,0.5)]">
                 Nouveau : Kit Expédition
             </span>
-          <h1 className="font-heading font-extrabold text-4xl md:text-7xl mb-6 leading-tight text-shadow-xl tracking-tight">
+          <h1 className="font-heading font-extrabold text-3xl md:text-7xl mb-4 md:mb-6 leading-tight text-shadow-xl tracking-tight">
             L'énergie illimitée<br/>pour vos aventures
           </h1>
-          <p className="text-lg md:text-2xl text-gray-100 mb-10 max-w-2xl mx-auto font-light drop-shadow-md">
+          <p className="text-base md:text-2xl text-gray-100 mb-6 md:mb-10 max-w-2xl mx-auto font-light drop-shadow-md px-2">
             Kits solaires, batteries Xtorm et sac SUNBAG prêts à partir pour vos treks, GR et aventures bikepacking.
           </p>
           <button 
             onClick={() => onNavigate('shop')}
-            className="bg-accent hover:bg-white hover:text-dark text-dark font-bold py-4 px-10 rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center gap-3 mx-auto text-lg"
+            className="bg-accent hover:bg-white hover:text-dark text-dark font-bold py-3 md:py-4 px-6 md:px-10 rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center gap-2 md:gap-3 mx-auto text-base md:text-lg"
           >
-            Choisir mon kit <ArrowRight size={22} />
+            Choisir mon kit <ArrowRight size={20} className="md:w-6 md:h-6" />
           </button>
         </div>
       </section>
@@ -96,7 +112,9 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
               <img 
                 src="/images/conception.jpg" 
                 alt="Conception SUNBAG" 
-                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-1000"
+                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-1000 will-change-transform"
+                loading="lazy"
+                decoding="async"
                 style={{ display: 'block' }}
                 onError={(e) => {
                     (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=2673&auto=format&fit=crop";

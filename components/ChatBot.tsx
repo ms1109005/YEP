@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, X, Send, Bot, Sparkles, ChevronDown } from 'lucide-react';
 
 interface Message {
@@ -17,6 +17,7 @@ const SUGGESTIONS = [
 
 export const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -27,8 +28,13 @@ export const ChatBot: React.FC = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [hasMoved, setHasMoved] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -43,6 +49,160 @@ export const ChatBot: React.FC = () => {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
+
+  // Load saved position from localStorage and mark as mounted
+  useEffect(() => {
+    // Always start with default position (null) to ensure button is visible
+    const savedPosition = localStorage.getItem('chatbot_position');
+    if (savedPosition) {
+      try {
+        const pos = JSON.parse(savedPosition);
+        // Validate position is within reasonable bounds
+        if (pos && typeof pos.x === 'number' && typeof pos.y === 'number' && pos.x >= 0 && pos.y >= 0) {
+          // Validate on next frame when window dimensions are available
+          requestAnimationFrame(() => {
+            const buttonSize = 48;
+            const maxX = window.innerWidth - buttonSize;
+            const maxY = window.innerHeight - buttonSize;
+            // Only use saved position if it's within valid bounds
+            if (pos.x <= maxX && pos.y <= maxY && pos.x >= 0 && pos.y >= 0) {
+              setPosition(pos);
+            } else {
+              // Reset invalid position - button will use default bottom-right
+              setPosition(null);
+              localStorage.removeItem('chatbot_position');
+            }
+          });
+        } else {
+          // Invalid position format, reset it
+          setPosition(null);
+          localStorage.removeItem('chatbot_position');
+        }
+      } catch (e) {
+        console.error('Failed to parse saved position', e);
+        setPosition(null);
+        localStorage.removeItem('chatbot_position');
+      }
+    } else {
+      // No saved position, use default (null = bottom-right)
+      setPosition(null);
+    }
+    // Mark as mounted after initial load to enable animations
+    setIsMounted(true);
+  }, []);
+
+  // Save position to localStorage
+  useEffect(() => {
+    if (position) {
+      localStorage.setItem('chatbot_position', JSON.stringify(position));
+    }
+  }, [position]);
+
+  // Handle drag start
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+    setHasMoved(false);
+    
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    const currentX = position?.x ?? (buttonRef.current ? window.innerWidth - buttonRef.current.offsetWidth - 72 : 0);
+    const currentY = position?.y ?? (buttonRef.current ? window.innerHeight - buttonRef.current.offsetHeight - 16 : 0);
+    
+    setDragStart({
+      x: clientX - currentX,
+      y: clientY - currentY
+    });
+    
+    // Store initial position to detect movement
+    dragStartRef.current = {
+      x: clientX,
+      y: clientY
+    };
+  };
+
+  // Use refs to avoid stale closures and improve performance
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const dragOffsetRef = useRef(dragStart);
+  const rafIdRef = useRef<number | null>(null);
+  
+  useEffect(() => {
+    dragOffsetRef.current = dragStart;
+  }, [dragStart]);
+
+  // Handle drag move with requestAnimationFrame for smoothness
+  const handleDragMove = useCallback((e: MouseEvent | TouchEvent) => {
+    e.preventDefault();
+    
+    // Cancel any pending animation frame
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
+    
+    // Use requestAnimationFrame for smooth updates
+    rafIdRef.current = requestAnimationFrame(() => {
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      
+      // Calculate movement distance from initial touch point
+      const moveX = Math.abs(clientX - dragStartRef.current.x);
+      const moveY = Math.abs(clientY - dragStartRef.current.y);
+      
+      // Check if user has moved significantly (to distinguish drag from click)
+      if (!hasMoved && (moveX > 8 || moveY > 8)) {
+        setHasMoved(true);
+      }
+      
+      const newX = clientX - dragOffsetRef.current.x;
+      const newY = clientY - dragOffsetRef.current.y;
+      
+      // Constrain to viewport bounds
+      const buttonWidth = buttonRef.current?.offsetWidth || 48;
+      const buttonHeight = buttonRef.current?.offsetHeight || 48;
+      const maxX = Math.max(0, window.innerWidth - buttonWidth);
+      const maxY = Math.max(0, window.innerHeight - buttonHeight);
+      
+      setPosition({
+        x: Math.max(0, Math.min(newX, maxX)),
+        y: Math.max(0, Math.min(newY, maxY))
+      });
+      
+      rafIdRef.current = null;
+    });
+  }, [hasMoved]);
+
+  // Handle drag end
+  const handleDragEnd = useCallback(() => {
+    // Cancel any pending animation frame
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+    setIsDragging(false);
+    // Delay resetting hasMoved to prevent onClick from firing after drag
+    setTimeout(() => {
+      setHasMoved(false);
+    }, 100);
+  }, []);
+
+  // Add event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleDragMove);
+      window.addEventListener('touchmove', handleDragMove);
+      window.addEventListener('mouseup', handleDragEnd);
+      window.addEventListener('touchend', handleDragEnd);
+      
+      return () => {
+        window.removeEventListener('mousemove', handleDragMove);
+        window.removeEventListener('touchmove', handleDragMove);
+        window.removeEventListener('mouseup', handleDragEnd);
+        window.removeEventListener('touchend', handleDragEnd);
+      };
+    }
+  }, [isDragging, handleDragMove, handleDragEnd]);
 
   const getBotResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase().trim();
@@ -290,19 +450,55 @@ N'hésitez pas à nous écrire ! 😊`;
     <>
       {/* Toggle Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-20 md:bottom-8 md:right-24 z-[60] p-4 rounded-full shadow-2xl transition-all duration-500 hover:scale-110 flex items-center justify-center ${isOpen ? 'bg-dark text-white rotate-90' : 'bg-gradient-to-r from-accent to-yellow-500 text-dark'}`}
+        ref={buttonRef}
+        onMouseDown={handleDragStart}
+        onTouchStart={handleDragStart}
+        onClick={(e) => {
+          // Prevent click if user was dragging
+          if (hasMoved || isDragging) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          setIsOpen(!isOpen);
+        }}
+        className={`fixed z-[100] p-3 md:p-4 rounded-full shadow-2xl flex items-center justify-center cursor-move select-none ${isOpen ? 'bg-dark text-white rotate-90' : 'bg-gradient-to-r from-accent to-yellow-500 text-dark'} ${isDragging ? 'scale-110 opacity-90' : 'hover:scale-110 active:scale-95'} ${!position ? 'bottom-[5.5rem] right-6 md:bottom-[6.5rem] md:right-10' : ''}`}
+        style={{ 
+          ...(position && typeof position.x === 'number' && typeof position.y === 'number' && position.x >= 0 && position.y >= 0 ? {
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+            bottom: 'auto',
+            right: 'auto'
+          } : {}),
+          touchAction: 'none',
+          userSelect: 'none',
+          willChange: isDragging ? 'left, top' : 'auto',
+          transition: isDragging ? 'none' : undefined,
+          transform: 'translateZ(0)',
+          display: 'flex',
+          visibility: 'visible',
+          opacity: 1,
+          minWidth: '48px',
+          minHeight: '48px',
+          zIndex: 100
+        }}
         aria-label={isOpen ? "Fermer le chat" : "Ouvrir le chat"}
       >
-        {isOpen ? <ChevronDown size={28} /> : <MessageCircle size={32} fill="currentColor" className="text-white/20" />}
+        {isOpen ? <ChevronDown size={24} className="md:w-7 md:h-7" /> : <MessageCircle size={28} className="md:w-8 md:h-8" fill="currentColor" />}
         {!isOpen && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+          <span className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
         )}
       </button>
 
       {/* Chat Window */}
       <div 
-        className={`fixed bottom-24 right-20 md:bottom-32 md:right-24 w-[92vw] md:w-[400px] max-h-[600px] h-[70vh] bg-white rounded-3xl shadow-2xl border border-gray-100 z-[60] flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right ${isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'}`}
+        className={`fixed bottom-20 right-4 left-4 md:bottom-32 md:right-24 md:left-auto w-auto md:w-[400px] max-h-[75vh] md:max-h-[600px] h-[75vh] md:h-[70vh] bg-white rounded-3xl shadow-2xl border border-gray-100 z-[100] flex flex-col overflow-hidden origin-bottom-right ${isMounted && isOpen ? 'transition-all duration-500 scale-100 opacity-100 translate-y-0' : isMounted ? 'transition-all duration-500 scale-90 opacity-0 translate-y-10 pointer-events-none' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'}`}
+        style={{ 
+          bottom: !position ? 'max(5rem, calc(env(safe-area-inset-bottom, 0px) + 5rem))' : undefined,
+          right: !position ? 'max(1rem, calc(env(safe-area-inset-right, 0px) + 1rem))' : undefined,
+          left: position ? undefined : 'max(1rem, calc(env(safe-area-inset-left, 0px) + 1rem))',
+          maxWidth: 'calc(100vw - 2rem)'
+        }}
       >
         {/* Header */}
         <div className="bg-dark p-4 flex items-center gap-3 border-b border-gray-800">

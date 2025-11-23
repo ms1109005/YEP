@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Trash2, ShoppingBag } from 'lucide-react';
 import { CartItem } from '../types';
 
@@ -12,18 +12,23 @@ interface CartDrawerProps {
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cart, onRemove, onCheckout }) => {
+  const [isMounted, setIsMounted] = useState(false);
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <>
       {/* Overlay */}
       <div 
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] ${isMounted ? 'transition-opacity duration-300' : ''} ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className={`fixed top-0 right-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl transform ${isMounted ? 'transition-transform duration-300 ease-out' : ''} flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-light/50">
           <h3 className="font-heading font-bold text-xl flex items-center gap-2">

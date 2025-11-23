@@ -18,6 +18,25 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
-      }
+      },
+      build: {
+        // Optimize build for production
+        minify: 'esbuild',
+        cssMinify: true,
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'react-vendor': ['react', 'react-dom'],
+              'lucide-vendor': ['lucide-react'],
+            },
+          },
+        },
+        // Improve chunk size
+        chunkSizeWarningLimit: 1000,
+      },
+      // Optimize dependencies
+      optimizeDeps: {
+        include: ['react', 'react-dom', 'lucide-react'],
+      },
     };
 });
