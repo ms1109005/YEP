@@ -13,9 +13,9 @@ export const products: Product[] = [
     specs: ['20.000 mAh', 'Étanche IP65', 'Charge Rapide 35W'],
     inStock: true,
     images: [
-      'images/kit1.1.jpg',
-      'images/kit1.2.jpg',
-      'images/kit1.3.jpg'
+      '/images/kit1.1.jpg',
+      '/images/kit1.2.jpg',
+      '/images/kit1.3.jpg'
     ],
     longDescription: `
       <p><strong>Le kit ultime pour l'aventure.</strong></p>
@@ -49,7 +49,7 @@ export const products: Product[] = [
     specs: ['10.000 mAh', 'Poids Plume (210g)', 'Assemblé Jura'],
     inStock: true,
     images: [
-      'images/kit.jpg'
+      '/images/kit.jpg'
     ],
     longDescription: `
         <p><strong>Léger, Local, Durable.</strong></p>
@@ -83,7 +83,7 @@ export const products: Product[] = [
     specs: ['20.000 mAh', 'IP65', 'Anti-Choc'],
     inStock: true,
     images: [
-      'images/XR202-00.png'
+      '/images/XR202-00.png'
     ],
     longDescription: `
         <h3>IP65 Water Resistant</h3>
@@ -125,7 +125,7 @@ export const products: Product[] = [
     specs: ['10.000 mAh', 'Garantie 3 ans', 'Format Poche'],
     inStock: true,
     images: [
-        'images/Powerbank-ALEX-6.jpg'
+        '/images/Powerbank-ALEX-6.jpg'
     ],
     longDescription: `
         <p><strong>Batterie "La Française 10K" (Modèle ALEX) - L'alternative éthique et locale.</strong></p>
@@ -161,7 +161,7 @@ export const products: Product[] = [
     specs: ['10W Haute efficacité', 'Flexible', 'Mousquetons fournis'],
     inStock: true,
     images: [
-        'images/panneau.jpg'
+        '/images/panneau.jpg'
     ],
     longDescription: "<p>Le cœur du système SUNBAG. Ce panneau solaire monocristallin flexible de 10W offre un rendement exceptionnel même par temps voilé. Il est équipé d'œillets renforcés pour une fixation facile sur n'importe quel sac à dos grâce aux mousquetons fournis.</p>",
     technicalSpecs: {
@@ -184,11 +184,11 @@ export const products: Product[] = [
     specs: ['40 Litres', 'Tissu Ripstop', 'Ergonomie Trekking'],
     inStock: true,
     images: [
-        'images/sac1.jpg',
-        'images/galery.jpg',
-        'images/galery2.jpg',
-        'images/galery3.jpg',
-        'images/galery4.jpg'
+        '/images/sac1.jpg',
+        '/images/galery.jpg',
+        '/images/galery2.jpg',
+        '/images/galery3.jpg',
+        '/images/galery4.jpg'
     ],
     longDescription: "<p>Le SUNBAG ONE est l'aboutissement de notre vision. Conçu spécifiquement pour intégrer le panneau solaire, il dispose d'un compartiment dédié 'Power Station' pour protéger votre batterie tout en la gardant connectée. Son dos ventilé et ses bretelles ergonomiques en font un véritable sac de trek.</p>",
     technicalSpecs: {

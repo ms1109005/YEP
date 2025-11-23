@@ -100,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
                 className="flex items-center gap-2 group flex-shrink-0 -ml-2"
               >
                   <img 
-                    src="images/logo.png" 
+                    src="/images/logo.png" 
                     alt="SUNBAG" 
                     className="h-36 md:h-64 w-auto object-contain"
                   />
@@ -231,7 +231,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
           
           {/* Mobile Header inside Menu */}
           <div className="flex justify-between items-center p-6 border-b border-gray-100">
-             <img src="images/sunbag-logo-alt.png" alt="Logo" className="h-10 w-auto" />
+             <img src="/images/sunbag-logo-alt.png" alt="Logo" className="h-10 w-auto" />
              <button 
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 text-dark hover:text-accent transition-colors bg-gray-100 rounded-full"

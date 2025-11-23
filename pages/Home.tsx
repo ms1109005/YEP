@@ -55,7 +55,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             className="absolute inset-0 z-0 will-change-transform"
         >
           <img 
-            src="images/image-principale.jpeg" 
+            src="/images/image-principale.jpeg" 
             alt="Image principale SUNBAG" 
             className="w-full h-[115%] object-cover -mt-[5%]"
             onError={(e) => {
@@ -94,7 +94,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             {/* Left: Image - Appears first */}
             <div className="relative rounded-[2rem] overflow-hidden shadow-2xl bg-white group order-2 lg:order-1 reveal-on-scroll opacity-0 translate-y-8 transition-all duration-1000 ease-out">
               <img 
-                src="images/conception.jpg" 
+                src="/images/conception.jpg" 
                 alt="Conception SUNBAG" 
                 className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-1000"
                 style={{ display: 'block' }}
@@ -132,9 +132,9 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                   <video 
                     controls 
                     className="w-full h-full object-cover"
-                    poster="images/conception.png"
+                    poster="/images/conception.png"
                   >
-                      <source src="images/sunbag-demo.mp4" type="video/mp4" />
+                      <source src="/images/sunbag-demo.mp4" type="video/mp4" />
                       Votre navigateur ne supporte pas la lecture vidéo.
                   </video>
                   {/* Overlay Play Button Hint (disappears on hover/play) */}
@@ -264,10 +264,10 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <div className="reveal-on-scroll opacity-0 translate-y-8 transition-all duration-1000">
                 <CustomerGallery 
                     images={[
-                        'images/galery.jpg',
-                        'images/galery2.jpg',
-                        'images/galery3.jpg',
-                        'images/galery4.jpg'
+                        '/images/galery.jpg',
+                        '/images/galery2.jpg',
+                        '/images/galery3.jpg',
+                        '/images/galery4.jpg'
                     ]}
                 />
             </div>

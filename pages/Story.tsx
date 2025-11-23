@@ -55,9 +55,9 @@ export const Story: React.FC<StoryProps> = ({ onNavigate }) => {
                     <div className="absolute top-0 right-0 bg-accent text-dark font-bold px-4 py-2 rounded-bl-2xl text-sm">HEPL / YEP</div>
                     <div className="flex flex-col items-center justify-center h-[250px] md:h-[300px] bg-light/50 rounded-2xl border-2 border-dashed border-gray-200 group-hover:border-accent transition-colors">
                         <GraduationCap size={64} className="text-gray-300 mb-4 group-hover:text-accent transition-colors" />
-                        <img src="images/Logo_HEPL.png" className="h-20 md:h-28 w-auto object-contain opacity-70 group-hover:opacity-100 transition-all duration-500" alt="HEPL Logo" 
+                        <img src="/images/Logo_HEPL.png" className="h-20 md:h-28 w-auto object-contain opacity-70 group-hover:opacity-100 transition-all duration-500" alt="HEPL Logo" 
                              onError={(e) => {
-                                 (e.target as HTMLImageElement).src = "images/logo.png";
+                                 (e.target as HTMLImageElement).src = "/images/logo.png";
                              }}
                         />
                         <span className="font-bold text-dark mt-4">Incubateur Étudiant</span>
