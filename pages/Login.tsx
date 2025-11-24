@@ -14,17 +14,69 @@ export const Login: React.FC<LoginProps> = ({ onNavigate, onLoginSuccess }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [touched, setTouched] = useState({ email: false, password: false });
+
+  const validateEmail = (value: string) => {
+    if (!value) return 'L\'email est requis';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return 'Format d\'email invalide';
+    return '';
+  };
+
+  const validatePassword = (value: string) => {
+    if (!value) return 'Le mot de passe est requis';
+    if (value.length < 6) return 'Le mot de passe doit contenir au moins 6 caractères';
+    return '';
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (touched.email) {
+      setEmailError(validateEmail(value));
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (touched.password) {
+      setPasswordError(validatePassword(value));
+    }
+  };
+
+  const handleBlur = (field: 'email' | 'password') => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    if (field === 'email') {
+      setEmailError(validateEmail(email));
+    } else {
+      setPasswordError(validatePassword(password));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setTouched({ email: true, password: true });
+    
+    const emailErr = validateEmail(email);
+    const passwordErr = validatePassword(password);
+    setEmailError(emailErr);
+    setPasswordError(passwordErr);
+
+    if (emailErr || passwordErr) {
+      return;
+    }
+
     setLoading(true);
 
     try {
       const user = await authService.login(email, password);
       onLoginSuccess(user);
     } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue');
+      setError(err.message || 'Une erreur est survenue lors de la connexion');
     } finally {
       setLoading(false);
     }
@@ -46,30 +98,66 @@ export const Login: React.FC<LoginProps> = ({ onNavigate, onLoginSuccess }) => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
+            <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
+              Email
+            </label>
             <input 
+              id="email"
               type="email" 
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-light border border-transparent focus:bg-white focus:border-primary focus:ring-0 outline-none transition-all"
+              onChange={handleEmailChange}
+              onBlur={() => handleBlur('email')}
+              aria-invalid={!!emailError}
+              aria-describedby={emailError ? 'email-error' : undefined}
+              className={`w-full px-4 py-3 rounded-xl bg-light border-2 transition-all outline-none ${
+                emailError 
+                  ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                  : 'border-transparent focus:bg-white focus:border-primary'
+              }`}
               placeholder="votre@email.com"
             />
+            {emailError && (
+              <p id="email-error" className="mt-1 text-sm text-red-500 flex items-center gap-1" role="alert">
+                <span>•</span> {emailError}
+              </p>
+            )}
           </div>
           
           <div>
             <div className="flex justify-between mb-2">
-              <label className="text-sm font-bold text-gray-700">Mot de passe</label>
-              <a href="#" className="text-sm text-primary hover:underline">Oublié ?</a>
+              <label htmlFor="password" className="text-sm font-bold text-gray-700">
+                Mot de passe
+              </label>
+              <button 
+                type="button"
+                onClick={() => {}}
+                className="text-sm text-primary hover:underline"
+              >
+                Oublié ?
+              </button>
             </div>
             <input 
+              id="password"
               type="password" 
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-light border border-transparent focus:bg-white focus:border-primary focus:ring-0 outline-none transition-all"
+              onChange={handlePasswordChange}
+              onBlur={() => handleBlur('password')}
+              aria-invalid={!!passwordError}
+              aria-describedby={passwordError ? 'password-error' : undefined}
+              className={`w-full px-4 py-3 rounded-xl bg-light border-2 transition-all outline-none ${
+                passwordError 
+                  ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                  : 'border-transparent focus:bg-white focus:border-primary'
+              }`}
               placeholder="••••••••"
             />
+            {passwordError && (
+              <p id="password-error" className="mt-1 text-sm text-red-500 flex items-center gap-1" role="alert">
+                <span>•</span> {passwordError}
+              </p>
+            )}
           </div>
 
           <button 

@@ -15,17 +15,91 @@ export const Register: React.FC<RegisterProps> = ({ onNavigate, onLoginSuccess }
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [touched, setTouched] = useState({ name: false, email: false, password: false });
+
+  const validateName = (value: string) => {
+    if (!value.trim()) return 'Le nom est requis';
+    if (value.trim().length < 2) return 'Le nom doit contenir au moins 2 caractères';
+    return '';
+  };
+
+  const validateEmail = (value: string) => {
+    if (!value) return 'L\'email est requis';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return 'Format d\'email invalide';
+    return '';
+  };
+
+  const validatePassword = (value: string) => {
+    if (!value) return 'Le mot de passe est requis';
+    if (value.length < 6) return 'Le mot de passe doit contenir au moins 6 caractères';
+    if (!/(?=.*[a-z])/.test(value)) return 'Le mot de passe doit contenir au moins une minuscule';
+    if (!/(?=.*[A-Z])/.test(value)) return 'Le mot de passe doit contenir au moins une majuscule';
+    if (!/(?=.*\d)/.test(value)) return 'Le mot de passe doit contenir au moins un chiffre';
+    return '';
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setName(value);
+    if (touched.name) {
+      setNameError(validateName(value));
+    }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (touched.email) {
+      setEmailError(validateEmail(value));
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (touched.password) {
+      setPasswordError(validatePassword(value));
+    }
+  };
+
+  const handleBlur = (field: 'name' | 'email' | 'password') => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    if (field === 'name') {
+      setNameError(validateName(name));
+    } else if (field === 'email') {
+      setEmailError(validateEmail(email));
+    } else {
+      setPasswordError(validatePassword(password));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setTouched({ name: true, email: true, password: true });
+    
+    const nameErr = validateName(name);
+    const emailErr = validateEmail(email);
+    const passwordErr = validatePassword(password);
+    setNameError(nameErr);
+    setEmailError(emailErr);
+    setPasswordError(passwordErr);
+
+    if (nameErr || emailErr || passwordErr) {
+      return;
+    }
+
     setLoading(true);
 
     try {
       const user = await authService.register(name, email, password);
       onLoginSuccess(user);
     } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue');
+      setError(err.message || 'Une erreur est survenue lors de l\'inscription');
     } finally {
       setLoading(false);
     }
@@ -47,40 +121,90 @@ export const Register: React.FC<RegisterProps> = ({ onNavigate, onLoginSuccess }
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Nom complet</label>
+            <label htmlFor="name" className="block text-sm font-bold text-gray-700 mb-2">
+              Nom complet
+            </label>
             <input 
+              id="name"
               type="text" 
               required
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-light border border-transparent focus:bg-white focus:border-primary focus:ring-0 outline-none transition-all"
+              onChange={handleNameChange}
+              onBlur={() => handleBlur('name')}
+              aria-invalid={!!nameError}
+              aria-describedby={nameError ? 'name-error' : undefined}
+              className={`w-full px-4 py-3 rounded-xl bg-light border-2 transition-all outline-none ${
+                nameError 
+                  ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                  : 'border-transparent focus:bg-white focus:border-primary'
+              }`}
               placeholder="Jean Dupont"
             />
+            {nameError && (
+              <p id="name-error" className="mt-1 text-sm text-red-500 flex items-center gap-1" role="alert">
+                <span>•</span> {nameError}
+              </p>
+            )}
           </div>
           
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
+            <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
+              Email
+            </label>
             <input 
+              id="email"
               type="email" 
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-light border border-transparent focus:bg-white focus:border-primary focus:ring-0 outline-none transition-all"
+              onChange={handleEmailChange}
+              onBlur={() => handleBlur('email')}
+              aria-invalid={!!emailError}
+              aria-describedby={emailError ? 'email-error' : undefined}
+              className={`w-full px-4 py-3 rounded-xl bg-light border-2 transition-all outline-none ${
+                emailError 
+                  ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                  : 'border-transparent focus:bg-white focus:border-primary'
+              }`}
               placeholder="jean@exemple.com"
             />
+            {emailError && (
+              <p id="email-error" className="mt-1 text-sm text-red-500 flex items-center gap-1" role="alert">
+                <span>•</span> {emailError}
+              </p>
+            )}
           </div>
           
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Mot de passe</label>
+            <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2">
+              Mot de passe
+            </label>
             <input 
+              id="password"
               type="password" 
               required
               minLength={6}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-light border border-transparent focus:bg-white focus:border-primary focus:ring-0 outline-none transition-all"
+              onChange={handlePasswordChange}
+              onBlur={() => handleBlur('password')}
+              aria-invalid={!!passwordError}
+              aria-describedby={passwordError ? 'password-error' : undefined}
+              className={`w-full px-4 py-3 rounded-xl bg-light border-2 transition-all outline-none ${
+                passwordError 
+                  ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                  : 'border-transparent focus:bg-white focus:border-primary'
+              }`}
               placeholder="6 caractères minimum"
             />
+            {passwordError && (
+              <p id="password-error" className="mt-1 text-sm text-red-500 flex items-center gap-1" role="alert">
+                <span>•</span> {passwordError}
+              </p>
+            )}
+            {!passwordError && password && (
+              <p className="mt-1 text-xs text-gray-500">
+                Le mot de passe doit contenir au moins 6 caractères, une majuscule, une minuscule et un chiffre.
+              </p>
+            )}
           </div>
 
           <button 

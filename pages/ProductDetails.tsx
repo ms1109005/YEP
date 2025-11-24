@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Check, ShoppingBag, Truck, ShieldCheck, RefreshCcw, Info, Table } from 'lucide-react';
-import { Product } from '../types';
+import { Product, Page } from '../types';
 import { ProductGallery } from '../components/ProductGallery';
+import { Breadcrumbs } from '../components/Breadcrumbs';
 
 interface ProductDetailsProps {
   product: Product;
   onAddToCart: (product: Product) => void;
   onBack: () => void;
+  onNavigate?: (page: Page) => void;
 }
 
-export const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onAddToCart, onBack }) => {
+export const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onAddToCart, onBack, onNavigate }) => {
   const [animating, setAnimating] = useState(false);
   const [activeTab, setActiveTab] = useState<'description' | 'specs'>('description');
+  
+  const handleNavigate = (page: Page) => {
+    if (onNavigate) {
+      onNavigate(page);
+    } else {
+      onBack();
+    }
+  };
 
   const handleAddToCart = () => {
     onAddToCart(product);
@@ -23,25 +33,40 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onAddTo
     <div className="min-h-screen pt-[110px] pb-32 md:pb-20 bg-white">
       <div className="container mx-auto px-6 max-w-7xl">
         
-        {/* Breadcrumb / Back */}
-        <button 
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Back button clicked, calling onBack');
-            if (onBack) {
-              onBack();
-            }
-          }}
-          className="inline-flex items-center gap-3 text-gray-600 hover:text-primary font-medium mb-12 mt-8 group transition-all duration-300 px-4 py-2 rounded-full hover:bg-primary/5 cursor-pointer z-50 relative"
-          style={{ pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent' }}
-        >
-          <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-primary/10 transition-colors">
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+        {/* Breadcrumbs */}
+        {onNavigate && (
+          <div className="mt-8 mb-6">
+            <Breadcrumbs 
+              items={[
+                { label: 'Boutique', page: 'shop' },
+                { label: product.name }
+              ]}
+              onNavigate={handleNavigate}
+            />
           </div>
-          <span className="font-semibold">Retour à la boutique</span>
-        </button>
+        )}
+        
+        {/* Back Button (fallback if no onNavigate) */}
+        {!onNavigate && (
+          <button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onBack) {
+                onBack();
+              }
+            }}
+            className="inline-flex items-center gap-3 text-gray-600 hover:text-primary font-medium mb-12 mt-8 group transition-all duration-300 px-4 py-2 rounded-full hover:bg-primary/5 cursor-pointer z-50 relative"
+            style={{ pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent' }}
+            aria-label="Retour à la boutique"
+          >
+            <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-primary/10 transition-colors">
+              <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+            </div>
+            <span className="font-semibold">Retour à la boutique</span>
+          </button>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 mb-12 md:mb-20">
           

@@ -138,7 +138,8 @@ const App: React.FC = () => {
             <ProductDetails 
                 product={selectedProduct} 
                 onAddToCart={handleAddToCart}
-                onBack={handleBackToShop} 
+                onBack={handleBackToShop}
+                onNavigate={handleNavigate}
             />
         );
       case 'login':

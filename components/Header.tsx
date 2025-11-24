@@ -109,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
 
   return (
     <>
-      <header className="absolute top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 h-[110px] flex items-center transition-all">
+      <header role="banner" className="absolute top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 h-[110px] flex items-center transition-all">
         <div className="container mx-auto pl-2 pr-6 flex justify-between items-center max-w-7xl">
           
           {/* Left Section: Logo */}
@@ -119,10 +119,11 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
                 href="#" 
                 onClick={(e) => { e.preventDefault(); handleNav('home'); }} 
                 className="flex items-center gap-2 group flex-shrink-0 -ml-2"
+                aria-label="Retour à l'accueil SUNBAG"
               >
                   <img 
                     src="/images/logo.png" 
-                    alt="SUNBAG" 
+                    alt="SUNBAG - L'énergie en mouvement" 
                     className="h-36 md:h-64 w-auto object-contain"
                     loading="eager"
                     fetchPriority="high"
@@ -132,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
           </div>
   
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav role="navigation" aria-label="Navigation principale" className="hidden md:flex items-center gap-8">
             {[
               { id: 'home', label: 'Accueil' },
               { id: 'story', label: 'À propos' },

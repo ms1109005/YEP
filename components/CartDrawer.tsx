@@ -35,7 +35,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cart, o
             <ShoppingBag className="text-primary" /> 
             Mon Panier
           </h3>
-          <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+          <button 
+            onClick={onClose} 
+            className="p-2 hover:bg-gray-200 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="Fermer le panier"
+          >
             <X size={24} />
           </button>
         </div>
@@ -65,8 +69,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cart, o
                   </div>
                   <button 
                     onClick={() => onRemove(index)}
-                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                    aria-label="Supprimer"
+                    className="p-2 text-gray-400 hover:text-red-500 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center active:scale-95"
+                    aria-label={`Supprimer ${item.name} du panier`}
                   >
                     <Trash2 size={18} />
                   </button>
@@ -82,9 +86,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cart, o
             <span className="text-primary">{total.toFixed(2)} €</span>
           </div>
           <button 
-            className="w-full bg-primary text-white py-4 rounded-full font-bold hover:bg-secondary transition-all transform hover:-translate-y-1 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-white py-4 rounded-full font-bold hover:bg-secondary transition-all transform hover:-translate-y-1 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 min-h-[48px]"
             disabled={cart.length === 0}
             onClick={onCheckout}
+            aria-label="Passer au paiement"
           >
             Passer au paiement
           </button>

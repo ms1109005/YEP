@@ -73,10 +73,11 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
                         <button
                             key={btn.id}
                             onClick={() => setFilter(btn.id as any)}
-                            className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap ${
+                            aria-pressed={filter === btn.id}
+                            className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap min-h-[44px] ${
                                 filter === btn.id 
                                 ? 'bg-accent text-dark shadow-md transform scale-105' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:scale-95'
                             }`}
                         >
                             {btn.label}
@@ -99,7 +100,8 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
                     {searchQuery && (
                         <button 
                             onClick={() => setSearchQuery('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-dark"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-dark min-h-[44px] min-w-[44px] flex items-center justify-center"
+                            aria-label="Effacer la recherche"
                         >
                             <X size={16} />
                         </button>
@@ -189,7 +191,8 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
                             <button 
                                 onClick={(e) => handleAdd(e, product)}
                                 disabled={animatingId === product.id}
-                                className={`hidden md:flex px-6 py-3 rounded-full font-bold text-sm items-center gap-2 transition-all duration-300 shadow-md transform hover:-translate-y-0.5 ${
+                                aria-label={`Ajouter ${product.name} au panier`}
+                                className={`hidden md:flex px-6 py-3 rounded-full font-bold text-sm items-center gap-2 transition-all duration-300 shadow-md transform hover:-translate-y-0.5 min-h-[44px] active:scale-95 ${
                                     animatingId === product.id 
                                     ? 'bg-green-500 text-white' 
                                     : 'bg-dark text-white hover:bg-accent hover:text-dark'
@@ -206,7 +209,8 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
                             <button 
                                 onClick={(e) => handleAdd(e, product)}
                                 disabled={animatingId === product.id}
-                                className={`md:hidden w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg will-change-transform ${
+                                aria-label={`Ajouter ${product.name} au panier`}
+                                className={`md:hidden w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg will-change-transform active:scale-95 ${
                                     animatingId === product.id 
                                     ? 'bg-green-500 text-white scale-110' 
                                     : 'bg-dark text-white hover:bg-accent hover:text-dark hover:scale-110'

@@ -1,12 +1,91 @@
 
 import React, { useState } from 'react';
-import { Mail, Phone, MessageCircle, MapPin, Send, ChevronDown, Truck, ShieldCheck, Sun } from 'lucide-react';
+import { Mail, Phone, MessageCircle, MapPin, Send, ChevronDown, Truck, ShieldCheck, Sun, CheckCircle2 } from 'lucide-react';
 
 export const Contact: React.FC = () => {
   const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [formTouched, setFormTouched] = useState<Record<string, boolean>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const toggleAccordion = (index: number) => {
     setActiveAccordion(activeAccordion === index ? null : index);
+  };
+
+  const validateField = (name: string, value: string) => {
+    switch (name) {
+      case 'name':
+        if (!value.trim()) return 'Le nom est requis';
+        if (value.trim().length < 2) return 'Le nom doit contenir au moins 2 caractères';
+        return '';
+      case 'email':
+        if (!value) return 'L\'email est requis';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) return 'Format d\'email invalide';
+        return '';
+      case 'subject':
+        if (!value) return 'Le sujet est requis';
+        return '';
+      case 'message':
+        if (!value.trim()) return 'Le message est requis';
+        if (value.trim().length < 10) return 'Le message doit contenir au moins 10 caractères';
+        return '';
+      default:
+        return '';
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (formTouched[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+    }
+  };
+
+  const handleBlur = (name: string) => {
+    setFormTouched(prev => ({ ...prev, [name]: true }));
+    setFormErrors(prev => ({ ...prev, [name]: validateField(name, formData[name as keyof typeof formData]) }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitSuccess(false);
+    
+    // Mark all fields as touched
+    const allTouched = Object.keys(formData).reduce((acc, key) => ({ ...acc, [key]: true }), {});
+    setFormTouched(allTouched);
+    
+    // Validate all fields
+    const errors: Record<string, string> = {};
+    Object.keys(formData).forEach(key => {
+      const error = validateField(key, formData[key as keyof typeof formData]);
+      if (error) errors[key] = error;
+    });
+    setFormErrors(errors);
+    
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitSuccess(true);
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormTouched({});
+      setFormErrors({});
+      setTimeout(() => setSubmitSuccess(false), 5000);
+    }, 1500);
   };
 
   const faqs = [
@@ -120,36 +199,143 @@ export const Contact: React.FC = () => {
                     <h3 className="font-heading font-bold text-3xl mb-2 text-dark">Envoyez-nous un message</h3>
                     <p className="text-gray-500 mb-8">Nous répondons généralement en moins de 2 heures.</p>
                     
-                    <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert("Message envoyé (simulation)"); }}>
+                    {submitSuccess && (
+                      <div className="mb-6 bg-green-50 border-2 border-green-200 text-green-700 p-4 rounded-2xl flex items-center gap-2" role="alert">
+                        <CheckCircle2 size={20} />
+                        <span className="font-medium">Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.</span>
+                      </div>
+                    )}
+
+                    <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="grid md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-dark ml-1">Nom complet</label>
-                                <input type="text" placeholder="Jean Dupont" className="w-full px-5 py-4 rounded-2xl bg-light border-2 border-transparent focus:border-primary focus:bg-white outline-none transition-all font-medium" />
+                                <label htmlFor="name" className="text-sm font-bold text-dark ml-1">
+                                  Nom complet
+                                </label>
+                                <input 
+                                  id="name"
+                                  name="name"
+                                  type="text" 
+                                  value={formData.name}
+                                  onChange={handleChange}
+                                  onBlur={() => handleBlur('name')}
+                                  placeholder="Jean Dupont" 
+                                  className={`w-full px-5 py-4 rounded-2xl bg-light border-2 outline-none transition-all font-medium ${
+                                    formErrors.name 
+                                      ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                                      : 'border-transparent focus:border-primary focus:bg-white'
+                                  }`}
+                                  aria-invalid={!!formErrors.name}
+                                  aria-describedby={formErrors.name ? 'name-error' : undefined}
+                                />
+                                {formErrors.name && (
+                                  <p id="name-error" className="text-sm text-red-500 mt-1" role="alert">
+                                    {formErrors.name}
+                                  </p>
+                                )}
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-dark ml-1">Email</label>
-                                <input type="email" placeholder="jean@exemple.com" className="w-full px-5 py-4 rounded-2xl bg-light border-2 border-transparent focus:border-primary focus:bg-white outline-none transition-all font-medium" />
+                                <label htmlFor="email" className="text-sm font-bold text-dark ml-1">
+                                  Email
+                                </label>
+                                <input 
+                                  id="email"
+                                  name="email"
+                                  type="email" 
+                                  value={formData.email}
+                                  onChange={handleChange}
+                                  onBlur={() => handleBlur('email')}
+                                  placeholder="jean@exemple.com" 
+                                  className={`w-full px-5 py-4 rounded-2xl bg-light border-2 outline-none transition-all font-medium ${
+                                    formErrors.email 
+                                      ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                                      : 'border-transparent focus:border-primary focus:bg-white'
+                                  }`}
+                                  aria-invalid={!!formErrors.email}
+                                  aria-describedby={formErrors.email ? 'email-error' : undefined}
+                                />
+                                {formErrors.email && (
+                                  <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">
+                                    {formErrors.email}
+                                  </p>
+                                )}
                             </div>
                         </div>
                         
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-dark ml-1">Sujet</label>
-                            <select className="w-full px-5 py-4 rounded-2xl bg-light border-2 border-transparent focus:border-primary focus:bg-white outline-none transition-all font-medium appearance-none cursor-pointer">
-                                <option>J'ai une question sur un produit</option>
-                                <option>Suivi de ma commande</option>
-                                <option>Demande de retour / SAV</option>
-                                <option>Partenariat / B2B</option>
-                                <option>Autre</option>
+                            <label htmlFor="subject" className="text-sm font-bold text-dark ml-1">
+                              Sujet
+                            </label>
+                            <select 
+                              id="subject"
+                              name="subject"
+                              value={formData.subject}
+                              onChange={handleChange}
+                              onBlur={() => handleBlur('subject')}
+                              className={`w-full px-5 py-4 rounded-2xl bg-light border-2 outline-none transition-all font-medium appearance-none cursor-pointer ${
+                                formErrors.subject 
+                                  ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                                  : 'border-transparent focus:border-primary focus:bg-white'
+                              }`}
+                              aria-invalid={!!formErrors.subject}
+                              aria-describedby={formErrors.subject ? 'subject-error' : undefined}
+                            >
+                                <option value="">Sélectionnez un sujet</option>
+                                <option value="question-produit">J'ai une question sur un produit</option>
+                                <option value="suivi-commande">Suivi de ma commande</option>
+                                <option value="retour-sav">Demande de retour / SAV</option>
+                                <option value="partenariat">Partenariat / B2B</option>
+                                <option value="autre">Autre</option>
                             </select>
+                            {formErrors.subject && (
+                              <p id="subject-error" className="text-sm text-red-500 mt-1" role="alert">
+                                {formErrors.subject}
+                              </p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-dark ml-1">Message</label>
-                            <textarea placeholder="Bonjour, je souhaiterais savoir..." rows={6} className="w-full px-5 py-4 rounded-2xl bg-light border-2 border-transparent focus:border-primary focus:bg-white outline-none transition-all font-medium resize-none"></textarea>
+                            <label htmlFor="message" className="text-sm font-bold text-dark ml-1">
+                              Message
+                            </label>
+                            <textarea 
+                              id="message"
+                              name="message"
+                              value={formData.message}
+                              onChange={handleChange}
+                              onBlur={() => handleBlur('message')}
+                              placeholder="Bonjour, je souhaiterais savoir..." 
+                              rows={6} 
+                              className={`w-full px-5 py-4 rounded-2xl bg-light border-2 outline-none transition-all font-medium resize-none ${
+                                formErrors.message 
+                                  ? 'border-red-300 focus:border-red-500 focus:bg-white' 
+                                  : 'border-transparent focus:border-primary focus:bg-white'
+                              }`}
+                              aria-invalid={!!formErrors.message}
+                              aria-describedby={formErrors.message ? 'message-error' : undefined}
+                            />
+                            {formErrors.message && (
+                              <p id="message-error" className="text-sm text-red-500 mt-1" role="alert">
+                                {formErrors.message}
+                              </p>
+                            )}
                         </div>
 
-                        <button className="w-full md:w-auto bg-accent hover:bg-dark hover:text-white text-dark font-bold py-4 px-10 rounded-full transition-all duration-300 transform hover:-translate-y-1 shadow-lg flex items-center justify-center gap-2">
-                            Envoyer le message <Send size={20} />
+                        <button 
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="w-full md:w-auto bg-accent hover:bg-dark hover:text-white text-dark font-bold py-4 px-10 rounded-full transition-all duration-300 transform hover:-translate-y-1 shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                              Envoi en cours...
+                            </>
+                          ) : (
+                            <>
+                              Envoyer le message <Send size={20} />
+                            </>
+                          )}
                         </button>
                     </form>
                 </div>

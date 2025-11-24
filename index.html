@@ -5,6 +5,15 @@
     <link rel="icon" href="/images/logo-removebg-preview.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SUNBAG | L'énergie en mouvement</title>
+    <meta name="description" content="Kits solaires, batteries Xtorm et sac SUNBAG pour vos treks, GR et aventures bikepacking. Autonomie énergétique illimitée pour vos aventures en plein air." />
+    <meta name="keywords" content="panneau solaire, batterie externe, kit solaire, randonnée, trek, bikepacking, énergie solaire, Xtorm, SUNBAG" />
+    <meta name="author" content="SUNBAG" />
+    <meta property="og:title" content="SUNBAG | L'énergie en mouvement" />
+    <meta property="og:description" content="Kits solaires, batteries Xtorm et sac SUNBAG pour vos treks, GR et aventures bikepacking." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/image-principale.jpeg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#1A4D2E" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
@@ -63,6 +72,17 @@
       /* Performance optimizations */
       * {
         -webkit-tap-highlight-color: transparent;
+      }
+      /* Mobile touch targets - minimum 44x44px */
+      button, a, [role="button"] {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      @media (min-width: 768px) {
+        button, a, [role="button"] {
+          min-height: auto;
+          min-width: auto;
+        }
       }
       img, video {
         content-visibility: auto;
