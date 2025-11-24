@@ -146,21 +146,32 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
                 
                 {/* Video Player */}
-                <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black relative group aspect-video">
+                <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black relative group flex items-center justify-center min-h-[300px] will-change-contents">
                   <video 
                     controls 
-                    className="w-full h-full object-cover"
+                    loop
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
+                    disablePictureInPicture
+                    className="w-full h-auto max-w-full max-h-[600px] object-contain"
                     poster="/images/conception.png"
+                    style={{
+                      transform: 'translate3d(0, 0, 0)',
+                      backfaceVisibility: 'hidden',
+                      perspective: '1000px',
+                      WebkitTransform: 'translate3d(0, 0, 0)',
+                      WebkitBackfaceVisibility: 'hidden',
+                      WebkitPerspective: '1000px',
+                      imageRendering: 'auto',
+                      willChange: 'transform',
+                      isolation: 'isolate'
+                    }}
                   >
-                      <source src="/images/sunbag-demo.mp4" type="video/mp4" />
+                      <source src="/images/boucle.mp4" type="video/mp4" />
                       Votre navigateur ne supporte pas la lecture vidéo.
                   </video>
-                  {/* Overlay Play Button Hint (disappears on hover/play) */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity duration-300 bg-black/10">
-                      <div className="bg-white/20 backdrop-blur text-white p-4 rounded-full border border-white/30 animate-pulse">
-                          <PlayCircle size={48} fill="currentColor" className="text-white opacity-80" />
-                      </div>
-                  </div>
                 </div>
 
                 {/* Content */}
