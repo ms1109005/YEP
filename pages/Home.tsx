@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, CheckCircle2, Map, Zap, Leaf, PlayCircle, Star } from 'lucide-react';
 import { Page } from '../types';
 import { CustomerGallery } from '../components/CustomerGallery';
@@ -12,6 +12,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   const heroBgRef = useRef<HTMLDivElement>(null);
   const rafId = useRef<number | null>(null);
   const lastScrollY = useRef(0);
+  const [showVideoControls, setShowVideoControls] = useState(false);
 
   useEffect(() => {
     // Intersection Observer for Reveal Animations
@@ -146,9 +147,12 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
                 
                 {/* Video Player */}
-                <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black relative group flex items-center justify-center min-h-[300px] will-change-contents">
+                <div 
+                  className="w-full rounded-2xl overflow-hidden shadow-lg bg-black relative group flex items-center justify-center min-h-[300px] will-change-contents"
+                  onPointerDown={() => setShowVideoControls(true)}
+                >
                   <video 
-                    controls 
+                    controls={showVideoControls}
                     loop
                     autoPlay
                     muted
@@ -156,6 +160,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     preload="auto"
                     disablePictureInPicture
                     className="w-full h-auto max-w-full max-h-[600px] object-contain"
+                    controlsList={showVideoControls ? "nodownload noremoteplayback" : "nodownload noremoteplayback nofullscreen"}
                     poster="/images/conception.png"
                     style={{
                       transform: 'translate3d(0, 0, 0)',
@@ -293,8 +298,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <div className="reveal-on-scroll opacity-0 translate-y-8 transition-all duration-1000">
                 <CustomerGallery 
                     images={[
-                        '/images/galery.jpg',
-                        '/images/galery2.jpg',
+                        '/images/galery2.png',
                         '/images/galery3.jpg',
                         '/images/galery4.jpg'
                     ]}

@@ -6,7 +6,7 @@ export const products: Product[] = [
     id: 'kit-expedition',
     name: 'Kit Rando "EXPEDITION"',
     description: "L'autonomie totale pour les treks engagés. Résiste à l'immersion et aux chocs.",
-    price: 86.35,
+    price: 71.98,
     category: 'kits',
     imageColor: 'bg-white',
     badges: ['Best-seller'],
@@ -19,7 +19,7 @@ export const products: Product[] = [
     ],
     longDescription: `
       <p><strong>Le kit ultime pour l'aventure.</strong></p>
-      <p>Le Kit EXPEDITION est conçu pour ceux qui partent loin et longtemps. Il combine notre panneau solaire flexible haute performance avec la batterie Xtorm Rugged 20K, une référence mondiale en matière de résistance.</p>
+      <p>Le Kit EXPEDITION est conçu pour ceux qui partent loin et longtemps. Il combine notre panneau solaire <strong>"Performance"</strong> haute efficacité avec la batterie Xtorm Rugged 20K, une référence mondiale en matière de résistance.</p>
       <p>Que vous soyez sur le GR20, en Islande ou en haute montagne, ce kit vous assure une réserve d'énergie constante et fiable, quelles que soient les conditions météorologiques.</p>
     `,
     features: [
@@ -42,7 +42,7 @@ export const products: Product[] = [
     id: 'kit-essentiel',
     name: 'Kit Rando "ESSENTIEL"',
     description: "L'alternative légère et éthique. Parfait pour la journée ou les études. Coque 100% recyclée.",
-    price: 53.78,
+    price: 33.36,
     category: 'kits',
     imageColor: 'bg-white',
     badges: [],
@@ -53,7 +53,7 @@ export const products: Product[] = [
     ],
     longDescription: `
         <p><strong>Léger, Local, Durable.</strong></p>
-        <p>Le Kit ESSENTIEL associe la performance de notre panneau solaire flexible à l'éthique de la batterie La Française. C'est le choix idéal pour le randonneur soucieux de son poids et de son impact écologique.</p>
+        <p>Le Kit ESSENTIEL associe la performance de notre panneau solaire <strong>"Eco"</strong> léger à l'éthique de la batterie La Française. C'est le choix idéal pour le randonneur soucieux de son poids et de son impact écologique.</p>
         <p>Avec seulement 210g pour la batterie, vous ne sentirez même pas que vous transportez une centrale électrique.</p>
     `,
     features: [
@@ -151,19 +151,17 @@ export const products: Product[] = [
     }
   },
   {
-    id: 'solar-flex',
-    name: 'Panneau Solaire "FLEX"',
-    description: "Le module solaire seul. Équipez un second sac ou remplacez votre panneau actuel.",
-    price: 31.46,
+    id: 'solar-performance',
+    name: 'Panneau Solaire "PERFORMANCE"',
+    description: "Cellules haute efficacité pour une charge rapide. Fabricant : SOECOPO (40W pliable).",
+    price: 17.10,
     category: 'accessoires',
     imageColor: 'bg-white',
-    badges: [],
-    specs: ['10W Haute efficacité', 'Flexible', 'Mousquetons fournis'],
+    badges: ['Premium'],
+    specs: ['40W pliable', 'Silicium monocristallin', 'Charge 2h30', 'Fabricant SOECOPO'],
     inStock: true,
-    images: [
-        '/images/panneau.jpg'
-    ],
-    longDescription: "<p>Le cœur du système SUNBAG. Ce panneau solaire monocristallin flexible de 10W offre un rendement exceptionnel même par temps voilé. Il est équipé d'œillets renforcés pour une fixation facile sur n'importe quel sac à dos grâce aux mousquetons fournis.</p>",
+    images: ['/images/panneau.jpg'],
+    longDescription: "<p>Le panneau <strong>Performance</strong> est celui intégré au Kit EXPEDITION. Fabriqué par <strong>SOECOPO</strong>, il s'agit d'un module pliable de 40W en silicium monocristallin. Résultat : une charge complète de votre batterie en environ <strong>2h30</strong>, même en montagne.</p>",
     technicalSpecs: {
         capacity: "10 Watts",
         output: "USB-A 5V/2A",
@@ -171,6 +169,27 @@ export const products: Product[] = [
         dimensions: "Format A4 environ",
         waterproof: "IP65 (Face avant)",
         warranty: "3 ans"
+    }
+  },
+  {
+    id: 'solar-eco',
+    name: 'Panneau Solaire "ECO"',
+    description: "L'entrée de gamme fiable et légère. Fabricant : Oillu (15W pliable).",
+    price: 10.87,
+    category: 'accessoires',
+    imageColor: 'bg-white',
+    badges: ['Eco'],
+    specs: ['15W pliable', 'Silicone monocristallin + PET + tissu', 'Charge 4h', 'Fabricant Oillu'],
+    inStock: true,
+    images: ['/images/panneau.jpg'],
+    longDescription: "<p>Le panneau <strong>Eco</strong> équipe le Kit ESSENTIEL. Fournisseur <strong>Oillu</strong>, format 15W pliable en silicone monocristallin + PET + tissu. Comptez environ <strong>4 heures</strong> pour recharger complètement la batterie standard, avec un poids minimal.</p>",
+    technicalSpecs: {
+        capacity: "8 Watts",
+        output: "USB-A 5V/1.5A",
+        weight: "150g",
+        dimensions: "Format compact",
+        waterproof: "IP54",
+        warranty: "2 ans"
     }
   },
   {
@@ -185,8 +204,7 @@ export const products: Product[] = [
     inStock: true,
     images: [
         '/images/sac1.jpg',
-        '/images/galery.jpg',
-        '/images/galery2.jpg',
+            '/images/galery2.png',
         '/images/galery3.jpg',
         '/images/galery4.jpg'
     ],

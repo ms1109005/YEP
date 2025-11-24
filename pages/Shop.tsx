@@ -62,7 +62,7 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 
                 {/* Filters */}
-                <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 no-scrollbar">
+                <div className="flex items-center gap-3 md:gap-2 overflow-x-auto md:overflow-visible w-full md:w-auto pb-3 md:pb-0 no-scrollbar flex-wrap md:flex-nowrap">
                     <span className="text-gray-400 mr-2 hidden md:block"><Filter size={18} /></span>
                     {[
                         { id: 'all', label: 'Tout voir' },
@@ -74,7 +74,7 @@ export const Shop: React.FC<ShopProps> = ({ onAddToCart, onViewProduct, initialS
                             key={btn.id}
                             onClick={() => setFilter(btn.id as any)}
                             aria-pressed={filter === btn.id}
-                            className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap min-h-[44px] ${
+                            className={`px-4 md:px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap min-h-[44px] shadow-sm ${
                                 filter === btn.id 
                                 ? 'bg-accent text-dark shadow-md transform scale-105' 
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:scale-95'

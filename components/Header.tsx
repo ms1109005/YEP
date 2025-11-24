@@ -255,30 +255,47 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, cartTotal, onOpenCart
       <div className={`fixed inset-0 bg-white z-[60] flex flex-col ${isMounted ? 'transition-all duration-500 ease-in-out' : ''} ${isMobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
           
           {/* Mobile Header inside Menu */}
-          <div className="flex justify-between items-center p-6 border-b border-gray-100">
-             <img src="/images/sunbag-logo-alt.png" alt="Logo" className="h-10 w-auto" />
-             <button 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 text-dark hover:text-accent transition-colors bg-gray-100 rounded-full"
-             >
-               <X size={24} />
-             </button>
+          <div className="flex flex-col border-b border-gray-100">
+            <div className="flex justify-between items-center p-6">
+               <img 
+                 src="/images/logo.png" 
+                 alt="SUNBAG" 
+                 className="h-36 md:h-64 w-auto object-contain" 
+               />
+               <button 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-dark hover:text-accent transition-colors bg-gray-100 rounded-full"
+               >
+                 <X size={24} />
+               </button>
+            </div>
+
+            {/* Mobile Search */}
+            <div className="px-6 pb-6">
+              <div className="relative bg-gray-50 rounded-3xl border border-gray-200 shadow-inner">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={20} />
+                  <input 
+                      type="text" 
+                      placeholder="Rechercher un produit..." 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
+                      className="w-full pl-12 pr-12 py-4 bg-transparent text-dark font-semibold placeholder-gray-400 outline-none focus:ring-2 focus:ring-accent/40 transition-all"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-dark transition-colors"
+                      aria-label="Effacer la recherche"
+                    >
+                      <X size={18} />
+                    </button>
+                  )}
+              </div>
+            </div>
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center gap-8 overflow-y-auto pb-20 p-6">
-            {/* Mobile Search */}
-            <div className="w-full max-w-xs relative">
-                <input 
-                    type="text" 
-                    placeholder="Rechercher..." 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
-                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border border-gray-200 outline-none focus:border-accent focus:bg-white transition-all text-dark font-medium shadow-sm"
-                />
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            </div>
-    
             <div className="flex flex-col items-center gap-6 w-full">
                 <button onClick={() => handleNav('home')} className="text-3xl font-heading font-bold text-dark hover:text-accent transition-colors">
                     Accueil

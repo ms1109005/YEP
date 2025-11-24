@@ -9,12 +9,12 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="bg-dark text-white pt-16 pb-8">
+    <footer className="bg-dark text-white pt-16 pb-10">
       <div className="container mx-auto px-6 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-16 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12">
           
           {/* Brand */}
-          <div className="col-span-1 md:col-span-1">
+          <div className="bg-white/5 sm:bg-transparent rounded-3xl p-6 sm:p-0">
             <h4 className="font-heading font-bold text-base md:text-lg mb-6 text-white uppercase tracking-wide">À propos</h4>
             <p className="text-gray-400 mb-8 leading-relaxed text-sm md:text-base">
               La boutique officielle pour vos kits solaires prêts à expédier. Autonomie et liberté pour toutes vos aventures.
@@ -34,7 +34,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           </div>
 
           {/* Nav */}
-          <div>
+          <div className="bg-white/5 sm:bg-transparent rounded-3xl p-6 sm:p-0">
             <h4 className="font-heading font-bold text-base md:text-lg mb-6 text-white uppercase tracking-wide">Navigation</h4>
             <div className="flex flex-col gap-3">
               <button 
@@ -65,7 +65,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           </div>
 
           {/* Support */}
-          <div>
+          <div className="bg-white/5 sm:bg-transparent rounded-3xl p-6 sm:p-0">
             <h4 className="font-heading font-bold text-base md:text-lg mb-6 text-white uppercase tracking-wide">Support</h4>
             <div className="space-y-3">
               <a 
@@ -80,7 +80,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           </div>
 
           {/* Logistic */}
-          <div>
+          <div className="bg-white/5 sm:bg-transparent rounded-3xl p-6 sm:p-0">
             <h4 className="font-heading font-bold text-base md:text-lg mb-6 text-white uppercase tracking-wide">Logistique</h4>
             <div className="space-y-3">
               <p className="text-gray-400 text-sm md:text-base">Liège, Belgique</p>
@@ -93,6 +93,22 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Mobile quick actions */}
+        <div className="md:hidden grid grid-cols-2 gap-4 mb-12">
+          <button 
+            onClick={() => onNavigate('shop')}
+            className="flex items-center justify-center bg-accent text-dark font-bold py-3 rounded-2xl shadow-lg hover:-translate-y-0.5 transition-all"
+          >
+            Boutique
+          </button>
+          <button 
+            onClick={() => onNavigate('contact')}
+            className="flex items-center justify-center bg-white/10 text-white font-bold py-3 rounded-2xl border border-white/20 hover:bg-white/20 transition-all"
+          >
+            Support
+          </button>
         </div>
 
         <div className="border-t border-white/10 pt-8 text-center text-gray-500 text-xs md:text-sm">
